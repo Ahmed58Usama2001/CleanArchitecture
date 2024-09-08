@@ -1,4 +1,9 @@
 
+using CleanArchitecture.Infrastructure;
+using CleanArchitecture.Infrastructure.Persistence.Data;
+using CleanArchitecture.Services;
+using Microsoft.EntityFrameworkCore;
+
 namespace CleanArchitecture.API
 {
     public class Program
@@ -6,30 +11,22 @@ namespace CleanArchitecture.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
+            //services regestration (Iservice Collection)
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.AddInfrastructureRegestration();
+            builder.AddServicesRegestrations();
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options=> options.UseSqlServer());
 
             var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
+            app.UseSwagger();
+            app.UseSwaggerUI();
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.Run();
         }
     }
