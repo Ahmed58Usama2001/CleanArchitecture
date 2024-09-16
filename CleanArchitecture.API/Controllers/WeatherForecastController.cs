@@ -1,6 +1,7 @@
 using CleanArchitecture.API.Contracts;
 using CleanArchitecture.Core.Entities;
 using CleanArchitecture.Core.Interfaces;
+using CleanArchitecture.Infrastructure.Factories;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,6 +55,14 @@ public class WeatherForecastController : ControllerBase
         };
 
         return Ok(oDataResult);
+    }
+
+    [HttpPost("Factory/{type}")]
+    public IActionResult FactoryBuilder([FromRoute]string type)
+    {
+        var dbcontext = DbContextFactory.ContextBuilder(type);
+
+        return Ok(dbcontext.GetDbContextBasedOnType());
     }
 }
 
