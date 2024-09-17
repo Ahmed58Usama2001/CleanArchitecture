@@ -1,4 +1,5 @@
 ﻿using CleanArchitecture.Core.Interfaces;
+using CleanArchitecture.Infrastructure.Brokers;
 using CleanArchitecture.Infrastructure.Persistence;
 using CleanArchitecture.Infrastructure.Persistence.Data.DBContextsServices;
 using Microsoft.AspNetCore.Builder;
@@ -15,5 +16,7 @@ public static class InfrastructureRegestration
         builder.Services.AddTransient<IDbContextBuilder,SqlDbContextService>();
         builder.Services.AddTransient<IDbContextBuilder,CosmosDbContextService>();
         builder.Services.AddTransient<IDbContextBuilder,GraphDbContextService>();
+
+        builder.Services.AddScoped<IMainBroker, MainBroker>();
     }
 }

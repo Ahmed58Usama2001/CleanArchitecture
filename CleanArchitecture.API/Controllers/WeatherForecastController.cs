@@ -1,8 +1,8 @@
 using CleanArchitecture.API.Contracts;
 using CleanArchitecture.Core.Entities;
 using CleanArchitecture.Core.Interfaces;
+using CleanArchitecture.Infrastructure.Brokers;
 using CleanArchitecture.Infrastructure.Factories;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArchitecture.API.Controllers;
@@ -20,11 +20,13 @@ public class WeatherForecastController : ControllerBase
 
     private readonly ILogger<WeatherForecastController> _logger;
     private readonly ICarServices _services;
+    private readonly IMainBroker _mainBroker;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger, ICarServices services)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, ICarServices services, IMainBroker mainBroker)
     {
         _logger = logger;
         _services = services;
+        _mainBroker = mainBroker;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
@@ -63,6 +65,20 @@ public class WeatherForecastController : ControllerBase
         var dbcontext = DbContextFactory.ContextBuilder(type);
 
         return Ok(dbcontext.GetDbContextBasedOnType());
+    }
+
+    [HttpPost("Broker")]
+    public IActionResult Broker(string url, string content)
+    {
+        var oPost=_mainBroker.Post(url, content);
+
+        var oGet = _mainBroker.Get(url);
+
+        var oPut=_mainBroker.Put(url, content);
+
+        var oDelete=_mainBroker.Delete(url);
+
+        return Ok($"Post:{oPost} - Get:{oDelete} - Put:{oPut} - Delete:{oDelete}");
     }
 }
 
