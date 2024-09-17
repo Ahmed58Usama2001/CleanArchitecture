@@ -21,12 +21,17 @@ public class WeatherForecastController : ControllerBase
     private readonly ILogger<WeatherForecastController> _logger;
     private readonly ICarServices _services;
     private readonly IMainBroker _mainBroker;
+    private readonly IExternalServices _externalServices;
+    private readonly IConfiguration _configuration;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger, ICarServices services, IMainBroker mainBroker)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, ICarServices services, IMainBroker mainBroker, IExternalServices externalServices,
+        IConfiguration configuration)
     {
         _logger = logger;
         _services = services;
         _mainBroker = mainBroker;
+        _externalServices = externalServices;
+        _configuration = configuration;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
@@ -79,6 +84,39 @@ public class WeatherForecastController : ControllerBase
         var oDelete=_mainBroker.Delete(url);
 
         return Ok($"Post:{oPost} - Get:{oDelete} - Put:{oPut} - Delete:{oDelete}");
+    }
+
+
+    [HttpPost("externalService")]
+    public async Task<IActionResult> externalServicePost([FromBody] SharedProduct model)
+    {
+        var oResult = await _externalServices.Post<SharedProduct, SharedProduct>(_configuration["ExternalApi"], model);
+
+        return Ok(oResult); 
+    }
+
+    [HttpGet("externalService")]
+    public async Task<IActionResult> externalService()
+    {
+        var oResult = await _externalServices.Get<List<SharedProduct>>(_configuration["ExternalApi"]);
+
+        return Ok(oResult);
+    }
+
+    [HttpGet("externalService/{id}")]
+    public async Task<IActionResult> externalService([FromRoute]int id)
+    {
+        var oResult = await _externalServices.Get<SharedProduct>($"{_configuration["ExternalApi"]}/{id}");
+
+        return Ok(oResult);
+    }
+
+    [HttpDelete("externalService/{id}")]
+    public async Task<IActionResult> DeleteExternalService([FromRoute] int id)
+    {
+        var oResult = await _externalServices.Delete($"{_configuration["ExternalApi"]}/{id}");
+
+        return Ok(oResult);
     }
 }
 

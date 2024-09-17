@@ -18,5 +18,6 @@ public static class InfrastructureRegestration
         builder.Services.AddTransient<IDbContextBuilder,GraphDbContextService>();
 
         builder.Services.AddScoped<IMainBroker, MainBroker>();
+        builder.Services.AddScoped<IExternalServices, ExternalServices>();
     }
 }
